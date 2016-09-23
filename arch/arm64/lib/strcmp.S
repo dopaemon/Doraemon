@@ -40,7 +40,7 @@
 #define pos		x11
 
 	/* Start of performance-critical section  -- one 64B cache line.  */
-	.align 6
+	.p2align 6
 WEAK(strcmp)
 	eor	tmp1, src1, src2
 	mov	zeroones, #REP8_01
