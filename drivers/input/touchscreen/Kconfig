@@ -13,6 +13,17 @@ if INPUT_TOUCHSCREEN
 source "drivers/input/touchscreen/xiaomi/Kconfig"
 source "drivers/input/touchscreen/gt9896/Kconfig"
 
+config TOUCHSCREEN_TRACE2WAKE
+	tristate "Trace2Wake for touchscreens"
+	select TOUCHSCREEN_PREVENT_SLEEP
+	default n
+
+config TOUCHSCREEN_PREVENT_SLEEP
+	bool "Inihibit sleep on modified touchscreen drivers"
+	default n
+	help
+	  This disables the sleep function of modified touchscreen drivers.
+
 config TOUCHSCREEN_TDDI_DBCLK
 	bool "TDDI IC enable double click"
 	help
