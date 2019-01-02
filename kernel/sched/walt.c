@@ -90,7 +90,6 @@ static void acquire_rq_locks_irqsave(const cpumask_t *cpus,
 {
 	int cpu;
 	int level = 0;
-
 	local_irq_save(*flags);
 	for_each_cpu(cpu, cpus) {
 		if (level == 0)
