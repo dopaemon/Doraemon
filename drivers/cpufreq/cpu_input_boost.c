@@ -7,63 +7,17 @@
 
 #include <linux/cpu.h>
 #include <linux/cpufreq.h>
-<<<<<<< HEAD
-#include <linux/input.h>
-#include <linux/kthread.h>
-#include <linux/moduleparam.h>
-#include <linux/msm_drm_notify.h>
-#include <linux/slab.h>
-#include <linux/version.h>
-=======
 #include <linux/msm_drm_notify.h>
 #include <linux/input.h>
 #include <linux/kthread.h>
 #include <linux/version.h>
 #include <linux/slab.h>
->>>>>>> 5e78a1a9a00a (cpu_input_boost: Introduce driver for event-based CPU boosting)
 
 /* The sched_param struct is located elsewhere in newer kernels */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)
 #include <uapi/linux/sched/types.h>
 #endif
 
-<<<<<<< HEAD
-static unsigned int input_boost_freq_little __read_mostly =
-	CONFIG_INPUT_BOOST_FREQ_LP;
-static unsigned int input_boost_freq_big __read_mostly =
-	CONFIG_INPUT_BOOST_FREQ_PERF;
-static unsigned int max_boost_freq_little __read_mostly =
-	CONFIG_MAX_BOOST_FREQ_LP;
-static unsigned int max_boost_freq_big __read_mostly =
-	CONFIG_MAX_BOOST_FREQ_PERF;
-static unsigned int cpu_freq_min_little __read_mostly =
-	CONFIG_CPU_FREQ_MIN_LP;
-static unsigned int cpu_freq_min_big __read_mostly =
-	CONFIG_CPU_FREQ_MIN_PERF;
-static unsigned int cpu_freq_idle_little __read_mostly =
-	CONFIG_CPU_FREQ_IDLE_LP;
-static unsigned int cpu_freq_idle_big __read_mostly =
-	CONFIG_CPU_FREQ_IDLE_PERF;
-
-static unsigned short input_boost_duration __read_mostly =
-	CONFIG_INPUT_BOOST_DURATION_MS;
-static unsigned short wake_boost_duration __read_mostly =
-	CONFIG_WAKE_BOOST_DURATION_MS;
-
-module_param(input_boost_freq_little, uint, 0644);
-module_param(input_boost_freq_big, uint, 0644);
-module_param(max_boost_freq_little, uint, 0644);
-module_param(max_boost_freq_big, uint, 0644);
-module_param(cpu_freq_min_little, uint, 0644);
-module_param(cpu_freq_min_big, uint, 0644);
-module_param(cpu_freq_idle_little, uint, 0644);
-module_param(cpu_freq_idle_big, uint, 0644);
-
-module_param(input_boost_duration, short, 0644);
-module_param(wake_boost_duration, short, 0644);
-
-=======
->>>>>>> 5e78a1a9a00a (cpu_input_boost: Introduce driver for event-based CPU boosting)
 enum {
 	SCREEN_OFF,
 	INPUT_BOOST,
@@ -96,17 +50,10 @@ static unsigned int get_input_boost_freq(struct cpufreq_policy *policy)
 	unsigned int freq;
 
 	if (cpumask_test_cpu(policy->cpu, cpu_lp_mask))
-<<<<<<< HEAD
-		freq = input_boost_freq_little;
-	else 
-		freq = input_boost_freq_big;
-		
-=======
-		freq = CONFIG_INPUT_BOOST_FREQ_LP;
+		freq = max(CONFIG_INPUT_BOOST_FREQ_LP, CONFIG_MIN_FREQ_LP);
 	else
-		freq = CONFIG_INPUT_BOOST_FREQ_PERF;
+		freq = max(CONFIG_INPUT_BOOST_FREQ_PERF, CONFIG_MIN_FREQ_PERF);
 
->>>>>>> 5e78a1a9a00a (cpu_input_boost: Introduce driver for event-based CPU boosting)
 	return min(freq, policy->max);
 }
 
@@ -115,40 +62,6 @@ static unsigned int get_max_boost_freq(struct cpufreq_policy *policy)
 	unsigned int freq;
 
 	if (cpumask_test_cpu(policy->cpu, cpu_lp_mask))
-<<<<<<< HEAD
-		freq = max_boost_freq_little;
-	else 
-		freq = max_boost_freq_big;
-	
-	return min(freq, policy->max);
-}
-
-static unsigned int get_min_freq(struct cpufreq_policy *policy)
-{
-	unsigned int freq;
-
-	if (cpumask_test_cpu(policy->cpu, cpu_lp_mask))
-		freq = cpu_freq_min_little;
-	else
-		freq = cpu_freq_min_big;
-
-	return max(freq, policy->cpuinfo.min_freq);
-}
-
-static unsigned int get_idle_freq(struct cpufreq_policy *policy)
-{
-	unsigned int freq;
-
-	if (cpumask_test_cpu(policy->cpu, cpu_lp_mask))
-		freq = cpu_freq_idle_little;
-	else
-		freq = cpu_freq_idle_big;
-
-	return max(freq, policy->cpuinfo.min_freq);
-}
-
-
-=======
 		freq = CONFIG_MAX_BOOST_FREQ_LP;
 	else
 		freq = CONFIG_MAX_BOOST_FREQ_PERF;
@@ -156,7 +69,6 @@ static unsigned int get_idle_freq(struct cpufreq_policy *policy)
 	return min(freq, policy->max);
 }
 
->>>>>>> 5e78a1a9a00a (cpu_input_boost: Introduce driver for event-based CPU boosting)
 static void update_online_cpu_policy(void)
 {
 	unsigned int cpu;
@@ -175,18 +87,9 @@ static void __cpu_input_boost_kick(struct boost_drv *b)
 	if (test_bit(SCREEN_OFF, &b->state))
 		return;
 
-<<<<<<< HEAD
-	if (!input_boost_duration)
-		return;
-
-	set_bit(INPUT_BOOST, &b->state);
-	if (!mod_delayed_work(system_unbound_wq, &b->input_unboost,
-			      msecs_to_jiffies(input_boost_duration)))
-=======
 	set_bit(INPUT_BOOST, &b->state);
 	if (!mod_delayed_work(system_unbound_wq, &b->input_unboost,
 			      msecs_to_jiffies(CONFIG_INPUT_BOOST_DURATION_MS)))
->>>>>>> 5e78a1a9a00a (cpu_input_boost: Introduce driver for event-based CPU boosting)
 		wake_up(&b->boost_waitq);
 }
 
@@ -286,11 +189,7 @@ static int cpu_notifier_cb(struct notifier_block *nb, unsigned long action,
 
 	/* Unboost when the screen is off */
 	if (test_bit(SCREEN_OFF, &b->state)) {
-<<<<<<< HEAD
-		policy->min = get_idle_freq(policy);
-=======
 		policy->min = policy->cpuinfo.min_freq;
->>>>>>> 5e78a1a9a00a (cpu_input_boost: Introduce driver for event-based CPU boosting)
 		return NOTIFY_OK;
 	}
 
@@ -306,15 +205,10 @@ static int cpu_notifier_cb(struct notifier_block *nb, unsigned long action,
 	 */
 	if (test_bit(INPUT_BOOST, &b->state))
 		policy->min = get_input_boost_freq(policy);
-<<<<<<< HEAD
-	else
-		policy->min = get_min_freq(policy);
-=======
 	else if (cpumask_test_cpu(policy->cpu, cpu_lp_mask))
 		policy->min = CONFIG_MIN_FREQ_LP;
 	else
 		policy->min = CONFIG_MIN_FREQ_PERF;
->>>>>>> 5e78a1a9a00a (cpu_input_boost: Introduce driver for event-based CPU boosting)
 
 	return NOTIFY_OK;
 }
@@ -333,11 +227,7 @@ static int msm_drm_notifier_cb(struct notifier_block *nb, unsigned long action,
 	/* Boost when the screen turns on and unboost when it turns off */
 	if (*blank == MSM_DRM_BLANK_UNBLANK) {
 		clear_bit(SCREEN_OFF, &b->state);
-<<<<<<< HEAD
-		__cpu_input_boost_kick_max(b, wake_boost_duration);
-=======
 		__cpu_input_boost_kick_max(b, CONFIG_WAKE_BOOST_DURATION_MS);
->>>>>>> 5e78a1a9a00a (cpu_input_boost: Introduce driver for event-based CPU boosting)
 	} else {
 		set_bit(SCREEN_OFF, &b->state);
 		wake_up(&b->boost_waitq);
