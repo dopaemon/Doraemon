@@ -1195,6 +1195,9 @@ static int wakeup_sources_stats_seq_show(struct seq_file *m, void *v)
 
 	print_wakeup_source_stats(m, ws);
 
+	if (!strcmp(current->comm, "batterystats-wo"))
+		return 0;
+
 	print_wakeup_source_stats(m, &deleted_ws);
 
 	return 0;
