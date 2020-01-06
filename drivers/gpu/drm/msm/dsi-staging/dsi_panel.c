@@ -770,6 +770,10 @@ static int dsi_panel_update_backlight(struct dsi_panel *panel,
 	if (rc < 0)
 		pr_err("failed to update dcs backlight:%d\n", bl_temp);
 
+#ifdef CONFIG_KLAPSE
+	set_rgb_slider(bl_lvl);
+#endif
+
 	return rc;
 }
 
