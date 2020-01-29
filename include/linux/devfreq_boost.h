@@ -9,6 +9,7 @@
 
 enum df_device { <<<<<<< HEAD
 	DEVFREQ_CPU_LLCC_DDR_BW,
+	DEVFREQ_CPU_CPU_LLC_BW,
 	DEVFREQ_MAX
 };
 
