@@ -363,6 +363,10 @@ int pm_qos_update_target(struct pm_qos_constraints *c, struct plist_node *node,
 	pm_qos_set_value(c, curr_value);
 	ret = pm_qos_set_value_for_cpus(c, &cpus);
 
+	spin_unlock(&pm_qos_lock);
+
+	trace_pm_qos_update_target(action, prev_value, curr_value);
+
 	/*
 	 * if cpu mask bits are set, call the notifier call chain
 	 * to update the new qos restriction for the cores
@@ -416,10 +420,9 @@ bool pm_qos_update_flags(struct pm_qos_flags *pqf,
 			 struct pm_qos_flags_request *req,
 			 enum pm_qos_req_action action, s32 val)
 {
-	unsigned long irqflags;
 	s32 prev_value, curr_value;
 
-	spin_lock_irqsave(&pm_qos_lock, irqflags);
+	spin_lock(&pm_qos_lock);
 
 	prev_value = list_empty(&pqf->list) ? 0 : pqf->effective_flags;
 
@@ -442,7 +445,7 @@ bool pm_qos_update_flags(struct pm_qos_flags *pqf,
 
 	curr_value = list_empty(&pqf->list) ? 0 : pqf->effective_flags;
 
-	spin_unlock_irqrestore(&pm_qos_lock, irqflags);
+	spin_unlock(&pm_qos_lock);
 
 	trace_pm_qos_update_flags(action, prev_value, curr_value);
 	return prev_value != curr_value;
@@ -477,12 +480,11 @@ EXPORT_SYMBOL_GPL(pm_qos_request_active);
 
 int pm_qos_request_for_cpumask(int pm_qos_class, struct cpumask *mask)
 {
-	unsigned long irqflags;
 	int cpu;
 	struct pm_qos_constraints *c = NULL;
 	int val;
 
-	spin_lock_irqsave(&pm_qos_lock, irqflags);
+	spin_lock(&pm_qos_lock);
 	c = pm_qos_array[pm_qos_class]->constraints;
 	val = c->default_value;
 
@@ -501,7 +503,7 @@ int pm_qos_request_for_cpumask(int pm_qos_class, struct cpumask *mask)
 			break;
 		}
 	}
-	spin_unlock_irqrestore(&pm_qos_lock, irqflags);
+	spin_unlock(&pm_qos_lock);
 
 	return val;
 }
