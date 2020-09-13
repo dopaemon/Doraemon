@@ -1007,7 +1007,11 @@ static ssize_t disksize_store(struct device *dev,
 	int ret;
 	u64 disksize;
 
+#ifdef CONFIG_VBSWAP_SIZE_OVERRIDE
+	ret = kstrtoull(buf, 10, (u64)SZ_1M * CONFIG_VBSWAP_SIZE_OVERRIDE);
+#else
 	ret = kstrtoull(buf, 10, &disksize);
+#endif
 	if (ret)
 		return ret;
 

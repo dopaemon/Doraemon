@@ -2,3 +2,9 @@ config VBSWAP
 	tristate "Fake block device for swap based on vnswap"
 	depends on BLOCK && ZSWAP
 	default n
+
+config VBSWAP_SIZE_OVERRIDE
+	int "vbswap size to set from kernel"
+	depends on VBSWAP
+	range 1024 4096
+	default 3072
