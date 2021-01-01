@@ -77,61 +77,14 @@ int suid_dumpable = 0;
 static LIST_HEAD(formats);
 static DEFINE_RWLOCK(binfmt_lock);
 
-#define ALPHABET_SIZE 256
+#define ZYGOTE32_BIN "/system/bin/app_process32"
+#define ZYGOTE64_BIN "/system/bin/app_process64"
+static struct signal_struct *zygote32_sig;
+static struct signal_struct *zygote64_sig;
 
-struct Node {
-	int is_word_end;
-	struct Node* children[ALPHABET_SIZE];
-};
-
-static struct Node root_node;
-
-static struct Node* create_node(void) {
-	struct Node* node = kmalloc(sizeof(struct Node), GFP_KERNEL);
-	int i;
-
-	node->is_word_end = 0;
-	for (i = 0; i < ALPHABET_SIZE; i++) {
-		node->children[i] = NULL;
-	}
-
-	return node;
-}
-
-static void insert_word(struct Node* from, const char* word, int length) {
-	int index;
-	int i;
-
-	for (i = 0; i < length; i++) {
-		index = word[i];
-		if (!from->children[index]) {
-			from->children[index] = create_node();
-		}
-
-		from = from->children[index];
-	}
-
-	from->is_word_end = 1;
-}
-
-static int search_word(struct Node* from, const char* word, int length) {
-	int index;
-	int i;
-
-	for (i = 0; i < length; i++) {
-		index = word[i];
-		if (!from->children[index]) {
-			return 0;
-		}
-
-		from = from->children[index];
-	}
-
-	if (!from) {
-		return 0;
-	}
-
-	return from->is_word_end;
+bool task_is_zygote(struct task_struct *p)
+{
+	return p->signal == zygote32_sig || p->signal == zygote64_sig;
 }
 
 void __register_binfmt(struct linux_binfmt * fmt, int insert)
@@ -1875,9 +1828,11 @@ static int do_execveat_common(int fd, struct filename *filename,
 	if (retval < 0)
 		goto out;
 
-	if (is_su && capable(CAP_SYS_ADMIN)) {
-		current->flags |= PF_SU;
-		su_exec();
+	if (is_global_init(current->parent)) {
+		if (unlikely(!strcmp(filename->name, ZYGOTE32_BIN)))
+			zygote32_sig = current->signal;
+		else if (unlikely(!strcmp(filename->name, ZYGOTE64_BIN)))
+			zygote64_sig = current->signal;
 	}
 
 	/* execve succeeded */
