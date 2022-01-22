@@ -26,7 +26,7 @@ task:
     - mkdir -p /tmp/ci/Kernel/Upload
   clone_script:
     - cd /tmp/ci/Kernel
-    - git clone -b master --single-branch --depth="1" https://github.com/KernelPanic-OpenSource/android_kernel_xiaomi_sweet.git /tmp/ci/Kernel/Source
+    - git clone -b master --single-branch https://github.com/KernelPanic-OpenSource/android_kernel_xiaomi_sweet.git /tmp/ci/Kernel/Source
     - git clone -b master --single-branch --depth="1" https://github.com/kdrag0n/proton-clang.git /tmp/ci/Kernel/clang
   export_script:
     - touch ~/.kernel
