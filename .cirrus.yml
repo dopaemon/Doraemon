@@ -70,7 +70,7 @@ task:
     - curl -sLo zipsigner-4.0.jar https://github.com/baalajimaestro/AnyKernel3/raw/master/zipsigner-4.0.jar
     - java -jar zipsigner-4.0.jar "$NAME"-AOSP.zip "$NAME"-AOSP-signed.zip
     - echo "export AOSP_ZIP_NAME=$NAME-AOSP-signed.zip" >> ~/.kernel
-    - mv $AOSP_ZIP_NAME /tmp/ci/Kernel/Upload/
+    - mv *.zip /tmp/ci/Kernel/Upload/
 
   clear_script:
     - rm -rf /tmp/ci/flashable/zip
@@ -107,7 +107,7 @@ task:
     - curl -sLo zipsigner-4.0.jar https://github.com/baalajimaestro/AnyKernel3/raw/master/zipsigner-4.0.jar
     - java -jar zipsigner-4.0.jar "$NAME"-MIUI.zip "$NAME"-MIUI-signed.zip
     - echo "export MIUI_ZIP_NAME=$NAME-MIUI-signed.zip" >> ~/.kernel
-    - mv $MIUI_ZIP_NAME /tmp/ci/Kernel/Upload/
+    - mv *.zip /tmp/ci/Kernel/Upload/
 
   telegram_script:
     - source ~/.kernel
