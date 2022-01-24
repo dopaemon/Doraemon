@@ -75,8 +75,8 @@ task:
     - mv *.zip /tmp/ci/Kernel/Upload/
 
   clear_script:
-    - rm -rf /tmp/ci/flashable/zip
-    - rm -rf /tmp/ci/Kernel/Source/out
+    - rm -rvf /tmp/ci/flashable/zip
+    - rm -rvf /tmp/ci/Kernel/Source/out
 
   miui_kernel_script:
     - source ~/.kernel
@@ -115,6 +115,8 @@ task:
     - source ~/.kernel
     - curl -F document=@"/tmp/ci/Kernel/Upload/$AOSP_ZIP_NAME" https://api.telegram.org/bot$TLGTK/sendDocument?chat_id=@KernelPanic_OpenSource_CI
     - curl -F document=@"/tmp/ci/Kernel/Upload/$MIUI_ZIP_NAME" https://api.telegram.org/bot$TLGTK/sendDocument?chat_id=@KernelPanic_OpenSource_CI
+
   checkout_script:
     - ls /tmp/ci/Kernel/Source/out/arch/arm64/boot/
     - ls /tmp/ci/flashable/zip/
+    - ls /tmp/ci/Kernel/Upload/
