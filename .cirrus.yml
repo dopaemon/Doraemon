@@ -75,15 +75,17 @@ task:
     - mv *.zip /tmp/ci/Kernel/Upload/
 
   clear_script:
-    - rm -rvf /tmp/ci/flashable/zip
     - rm -rvf /tmp/ci/Kernel/Source/out
+    - rm -rvf /tmp/ci/flashable/zip
 
   miui_kernel_script:
     - source ~/.kernel
     - cd /tmp/ci/Kernel/Source
+    - git checkout HEAD arch/arm64/configs/vendor/sweet_user_defconfig
+    - git fetch https://github.com/KernelPanic-OpenSource/android_kernel_xiaomi_sweet.git master-miui
+    - git cherry-pick fb60d33f73d3f6980800b17845273bc9506acae8
     - export D='"'
     - echo CONFIG_LOCALVERSION="$D"-"$NAME"-Miui"$D" >> arch/arm64/configs/vendor/sweet_user_defconfig
-    - git revert 2a6823fcb33f530267b31bd4aa714a66c48b4c6d --no-commit
   miui_compile_script:
     - source ~/.kernel
     - cd /tmp/ci/Kernel/Source
