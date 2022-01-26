@@ -38,8 +38,8 @@ task:
     - echo "export ARCH=arm64" >> ~/.kernel
     - echo "export SUBARCH=arm64" >> ~/.kernel
     - echo "export DTC_EXT=dtc"
-    - echo "export CROSS_COMPILE=aarch64-linux-gnu-" >> ~/.kernel
-    - echo "export CROSS_COMPILE_ARM32=arm-linux-gnueabi-" >> ~/.kernel
+    - echo "export CROSS_COMPILE=/tmp/ci/Kernel/clang/bin/aarch64-linux-gnu-" >> ~/.kernel
+    - echo "export CROSS_COMPILE_ARM32=/tmp/ci/Kernel/clang/bin/arm-linux-gnueabi-" >> ~/.kernel
     - echo "export PATH="/tmp/ci/Kernel/clang/bin:${PATH}"" >> ~/.kernel
 
   aosp_kernel_script:
@@ -51,7 +51,7 @@ task:
     - source ~/.kernel
     - cd /tmp/ci/Kernel/Source
     - make O=out sweet_user_defconfig
-    - make -j$(nproc --all) O=out ARCH=arm64 CC="ccache clang" CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- |& tee ~/$TIME.txt
+    - make -j$(nproc --all) O=out ARCH=arm64 CC=/tmp/ci/Kernel/clang/bin/clang CLANG_TRIPLE=/tmp/ci/Kernel/clang/bin/aarch64-linux-gnu- CROSS_COMPILE=/tmp/ci/Kernel/clang/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=/tmp/ci/Kernel/clang/bin/arm-linux-gnueabi- |& tee ~/$TIME.txt
   aosp_dtbo_script:
     - cd /tmp/ci/Kernel/Source/out/arch/arm64/boot/
     - curl https://android.googlesource.com/platform/external/avb/+/refs/heads/master/avbtool.py?format=TEXT | base64 --decode > avbtool.py
@@ -90,7 +90,7 @@ task:
     - source ~/.kernel
     - cd /tmp/ci/Kernel/Source
     - make O=out sweet_user_defconfig
-    - make -j$(nproc --all) O=out ARCH=arm64 CC="ccache clang" CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- |& tee ~/$TIME.txt
+    - make -j$(nproc --all) O=out ARCH=arm64 CC=/tmp/ci/Kernel/clang/bin/clang CLANG_TRIPLE=/tmp/ci/Kernel/clang/bin/aarch64-linux-gnu- CROSS_COMPILE=/tmp/ci/Kernel/clang/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=/tmp/ci/Kernel/clang/bin/arm-linux-gnueabi- |& tee ~/$TIME.txt
   miui_dtbo_script:
     - cd /tmp/ci/Kernel/Source/out/arch/arm64/boot/
     - curl https://android.googlesource.com/platform/external/avb/+/refs/heads/master/avbtool.py?format=TEXT | base64 --decode > avbtool.py
