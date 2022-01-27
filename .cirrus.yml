@@ -44,22 +44,22 @@ task:
     - echo "export CROSS_COMPILE_ARM32=/tmp/ci/Kernel/gcc32/bin/arm-linux-gnueabi-" >> ~/.kernel
     - echo "export PATH="/tmp/ci/Kernel/clang/bin:${PATH}"" >> ~/.kernel
 
-  aosp_kernel_script:
+  oss_kernel_script:
     - source ~/.kernel
     - cd /tmp/ci/Kernel/Source
     - export D='"'
-    - echo CONFIG_LOCALVERSION="$D"-"$NAME"-AOSP"$D" >> arch/arm64/configs/vendor/sweet_user_defconfig
-  aosp_compile_script:
+    - echo CONFIG_LOCALVERSION="$D"-"$NAME"-OSS"$D" >> arch/arm64/configs/vendor/sweet_user_defconfig
+  oss_compile_script:
     - source ~/.kernel
     - cd /tmp/ci/Kernel/Source
     - make O=out sweet_user_defconfig
     - make -j$(nproc --all) O=out ARCH=arm64 CC=clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=/tmp/ci/Kernel/gcc64/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=/tmp/ci/Kernel/gcc32/bin/arm-linux-gnueabi- |& tee ~/$TIME.txt
-  aosp_dtbo_script:
+  oss_dtbo_script:
     - cd /tmp/ci/Kernel/Source/out/arch/arm64/boot/
     - curl https://android.googlesource.com/platform/external/avb/+/refs/heads/master/avbtool.py?format=TEXT | base64 --decode > avbtool.py
     - chmod +x avbtool.py
     - python3 avbtool.py add_hash_footer --image dtbo.img --partition_size=33554432 --partition_name dtbo
-  aosp_flashable_script:
+  oss_flashable_script:
     - source ~/.kernel
     - mkdir -p /tmp/ci/flashable
     - cd /tmp/ci/flashable
@@ -67,13 +67,13 @@ task:
     - cp -r /tmp/ci/Kernel/Source/out/arch/arm64/boot/Image.gz /tmp/ci/flashable/zip/
     - cp -r /tmp/ci/Kernel/Source/out/arch/arm64/boot/dtbo.img /tmp/ci/flashable/zip/
     - cd zip
-    - zip -rv9 "$NAME"-AOSP.zip *
-  aosp_zipSigner_script:
+    - zip -rv9 "$NAME"-OSS.zip *
+  oss_zipSigner_script:
     - source ~/.kernel
     - cd /tmp/ci/flashable/zip/
     - curl -sLo zipsigner-4.0.jar https://github.com/baalajimaestro/AnyKernel3/raw/master/zipsigner-4.0.jar
-    - java -jar zipsigner-4.0.jar "$NAME"-AOSP.zip "$NAME"-AOSP-signed.zip
-    - echo "export AOSP_ZIP_NAME=$NAME-AOSP-signed.zip" >> ~/.kernel
+    - java -jar zipsigner-4.0.jar "$NAME"-OSS.zip "$NAME"-OSS-signed.zip
+    - echo "export OSS_ZIP_NAME=$NAME-OSS-signed.zip" >> ~/.kernel
     - mv *.zip /tmp/ci/Kernel/Upload/
 
   clear_script:
@@ -117,7 +117,7 @@ task:
 
   telegram_script:
     - source ~/.kernel
-    - curl -F document=@"/tmp/ci/Kernel/Upload/$AOSP_ZIP_NAME" https://api.telegram.org/bot$TLGTK/sendDocument?chat_id=@KernelPanic_OpenSource_CI
+    - curl -F document=@"/tmp/ci/Kernel/Upload/$OSS_ZIP_NAME" https://api.telegram.org/bot$TLGTK/sendDocument?chat_id=@KernelPanic_OpenSource_CI
     - curl -F document=@"/tmp/ci/Kernel/Upload/$MIUI_ZIP_NAME" https://api.telegram.org/bot$TLGTK/sendDocument?chat_id=@KernelPanic_OpenSource_CI
 
   checkout_script:
