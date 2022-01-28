@@ -26,6 +26,7 @@ task:
   cfolder_script:
     - mkdir -p /tmp/ci/Kernel
     - mkdir -p /tmp/ci/Kernel/Upload
+    - mkdir -p /tmp/ci/Kernel/Telegram
   clone_script:
     - cd /tmp/ci/Kernel
     - git clone -b master --single-branch https://github.com/KernelPanic-OpenSource/android_kernel_xiaomi_sweet.git /tmp/ci/Kernel/Source
@@ -34,8 +35,11 @@ task:
     - git clone -b master --single-branch --depth="1" https://github.com/radcolor/arm-linux-gnueabi.git /tmp/ci/Kernel/gcc32/
   export_script:
     - touch ~/.kernel
+    - echo "export CAF="LA.UM.9.1.r1-11500-SMxxx0.0"" >> ~/.kernel
     - echo "export NAME="Doraemon-Kernel-$(date +"%d%m%Y")"" >> ~/.kernel
     - echo "export TIME="$(date +"%d%m%Y")"" >> ~/.kernel
+    - echo "export DATETG="$(date +"%d/%m/%Y")"" >> ~/.kernel
+    - echo "export TIMETG="$(date +"%H:%M:%S")"" >> ~/.kernel
     - echo "export CC=clang" >> ~/.kernel
     - echo "export ARCH=arm64" >> ~/.kernel
     - echo "export SUBARCH=arm64" >> ~/.kernel
@@ -117,8 +121,28 @@ task:
 
   telegram_script:
     - source ~/.kernel
-    - curl -F document=@"/tmp/ci/Kernel/Upload/$OSS_ZIP_NAME" https://api.telegram.org/bot$TLGTK/sendDocument?chat_id=@KernelPanic_OpenSource_CI
-    - curl -F document=@"/tmp/ci/Kernel/Upload/$MIUI_ZIP_NAME" https://api.telegram.org/bot$TLGTK/sendDocument?chat_id=@KernelPanic_OpenSource_CI
+    - touch /tmp/ci/Kernel/Telegram/Text.txt
+    - echo "Doraemon Kernel" >> /tmp/ci/Kernel/Telegram/Textoss.txt
+    - echo "Date: $DATETG" >> /tmp/ci/Kernel/Telegram/Textoss.txt
+    - echo "Time: $TIMETG" >> /tmp/ci/Kernel/Telegram/Textoss.txt
+    - echo "Android: 11 | 12" >> /tmp/ci/Kernel/Telegram/Textoss.txt
+    - echo "Linux: Linux 4.14.190" >> /tmp/ci/Kernel/Telegram/Textoss.txt
+    - echo "CAF: $CAF" >> /tmp/ci/Kernel/Telegram/Textoss.txt
+    - echo "Type: OSS" >> /tmp/ci/Kernel/Telegram/Textoss.txt
+    - echo "by: https://t.me/KernelPanix" >> /tmp/ci/Kernel/Telegram/Textoss.txt
+    - export MESSOSS=$(cat /tmp/ci/Kernel/Telegram/Textoss.txt)
+    - curl -F caption=$MESSOSS -F document=@"/tmp/ci/Kernel/Upload/$OSS_ZIP_NAME" https://api.telegram.org/bot$TLGTK/sendDocument?chat_id=@KernelPanic_OpenSource_CI
+
+    - echo "Doraemon Kernel" >> /tmp/ci/Kernel/Telegram/Textmiui.txt
+    - echo "Date: $DATETG" >> /tmp/ci/Kernel/Telegram/Textmiui.txt
+    - echo "Time: $TIMETG" >> /tmp/ci/Kernel/Telegram/Textmiui.txt
+    - echo "Android: 11 | 12" >> /tmp/ci/Kernel/Telegram/Textmiui.txt
+    - echo "Linux: Linux 4.14.190" >> /tmp/ci/Kernel/Telegram/Textmiui.txt
+    - echo "CAF: $CAF" >> /tmp/ci/Kernel/Telegram/Textmiui.txt
+    - echo "Type: Miui" >> /tmp/ci/Kernel/Telegram/Textmiui.txt
+    - echo "by: https://t.me/KernelPanix" >> /tmp/ci/Kernel/Telegram/Textmiui.txt
+    - export MESSMIUI=$(cat /tmp/ci/Kernel/Telegram/Textmiui.txt)
+    - curl -F caption=$MESSMIUI -F document=@"/tmp/ci/Kernel/Upload/$MIUI_ZIP_NAME" https://api.telegram.org/bot$TLGTK/sendDocument?chat_id=@KernelPanic_OpenSource_CI
 
   checkout_script:
     - ls /tmp/ci/Kernel/Source/out/arch/arm64/boot/
