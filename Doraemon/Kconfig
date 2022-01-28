@@ -1,0 +1,5 @@
+menu "Doraemon Kernel"
+
+source "Doraemon/modules/Kconfig"
+
+endmenu

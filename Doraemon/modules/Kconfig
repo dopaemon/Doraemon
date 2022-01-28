@@ -1,0 +1,7 @@
+menu "modules"
+
+menu "android-lkm"
+source "Doraemon/modules/android-lkm/Kconfig"
+endmenu
+
+endmenu
