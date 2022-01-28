@@ -121,28 +121,8 @@ task:
 
   telegram_script:
     - source ~/.kernel
-    - touch /tmp/ci/Kernel/Telegram/Text.txt
-    - echo "Doraemon Kernel" >> /tmp/ci/Kernel/Telegram/Textoss.txt
-    - echo "Date: $DATETG" >> /tmp/ci/Kernel/Telegram/Textoss.txt
-    - echo "Time: $TIMETG" >> /tmp/ci/Kernel/Telegram/Textoss.txt
-    - echo "Android: 11 | 12" >> /tmp/ci/Kernel/Telegram/Textoss.txt
-    - echo "Linux: Linux 4.14.190" >> /tmp/ci/Kernel/Telegram/Textoss.txt
-    - echo "CAF: $CAF" >> /tmp/ci/Kernel/Telegram/Textoss.txt
-    - echo "Type: OSS" >> /tmp/ci/Kernel/Telegram/Textoss.txt
-    - echo "by: https://t.me/KernelPanix" >> /tmp/ci/Kernel/Telegram/Textoss.txt
-    - export MESSOSS=$(cat /tmp/ci/Kernel/Telegram/Textoss.txt)
-    - curl -F caption=$MESSOSS -F document=@"/tmp/ci/Kernel/Upload/$OSS_ZIP_NAME" https://api.telegram.org/bot$TLGTK/sendDocument?chat_id=@KernelPanic_OpenSource_CI
-
-    - echo "Doraemon Kernel" >> /tmp/ci/Kernel/Telegram/Textmiui.txt
-    - echo "Date: $DATETG" >> /tmp/ci/Kernel/Telegram/Textmiui.txt
-    - echo "Time: $TIMETG" >> /tmp/ci/Kernel/Telegram/Textmiui.txt
-    - echo "Android: 11 | 12" >> /tmp/ci/Kernel/Telegram/Textmiui.txt
-    - echo "Linux: Linux 4.14.190" >> /tmp/ci/Kernel/Telegram/Textmiui.txt
-    - echo "CAF: $CAF" >> /tmp/ci/Kernel/Telegram/Textmiui.txt
-    - echo "Type: Miui" >> /tmp/ci/Kernel/Telegram/Textmiui.txt
-    - echo "by: https://t.me/KernelPanix" >> /tmp/ci/Kernel/Telegram/Textmiui.txt
-    - export MESSMIUI=$(cat /tmp/ci/Kernel/Telegram/Textmiui.txt)
-    - curl -F caption=$MESSMIUI -F document=@"/tmp/ci/Kernel/Upload/$MIUI_ZIP_NAME" https://api.telegram.org/bot$TLGTK/sendDocument?chat_id=@KernelPanic_OpenSource_CI
+    - curl -F document=@"/tmp/ci/Kernel/Upload/$OSS_ZIP_NAME" https://api.telegram.org/bot$TLGTK/sendDocument?chat_id=@KernelPanic_OpenSource_CI
+    - curl -F document=@"/tmp/ci/Kernel/Upload/$MIUI_ZIP_NAME" https://api.telegram.org/bot$TLGTK/sendDocument?chat_id=@KernelPanic_OpenSource_CI
 
   checkout_script:
     - ls /tmp/ci/Kernel/Source/out/arch/arm64/boot/
