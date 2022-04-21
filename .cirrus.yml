@@ -2,11 +2,14 @@ env:
     CIRRUS_CLONE_DEPTH: 1
     CIRRUS_WORKING_DIR: "/tmp/ci"
 
-    TOKEN: "ENCRYPTED[9aaf5d478b7ed755a49ec6f9307c22a3cc571118818fb7f4152931262f0705d7818e0ab378e044ec3f23ca9ea0955e86]"
-    EMAIL: "ENCRYPTED[3bbee728d0fdd7bb88c7fd907e3e28fc5d73ebc68d73ab8b7aa9e13d5697195f4fed2feb667c845357a063887c2925c2]"
-    UNAME: "ENCRYPTED[9ef2cd60d778d03e947a740930e0c5093e08a965d7568382447fa2cc5ec9ed47e4543669a3ad0b25061506f22c45fc55]"
-    TLGTK: "ENCRYPTED[213e32fa8322b178aa2767dc48a37d3a71f87742c45f14ba09d9799b615a6a3857e8e219c30dc7cfb566b0aecf427a98]"
-    RCLTK: "ENCRYPTED[2f6b269fa41f270ba351ed09e7cb9b9e35b255d13140565a00e12ed96adfe1a4fe243357948352ee6d8885a5d32a7efe]"
+    VERSIONS: "0.0.1"
+
+    TOKEN: "ENCRYPTED[c423f84cf172cbebabd85e9bcd7ccec097e52ec7f250c8ca5b4590f38d5681017de24c95d20f575a9625d204474fd673]"
+    EMAIL: "ENCRYPTED[48d5be342dbaa8e34813b9df38c498834e66d86bd3b688749d2bccd2afa202c0326dd4717a4819affac3b1da78e87a3e]"
+    UNAME: "ENCRYPTED[f81d044ec8ee7041a8c2a8c844db183b366ba7d2ed7056ce00db5e657a569d1d9085fd03a0d81d45c26e29500c556c90]"
+    TLGTK: "ENCRYPTED[dd141e916858d9abb18672ed480a89f19a46bf81d6314f735d849c77690010edc0f345216bfed2a6cbb06da70903b8d4]"
+    SSHKEY1: "ENCRYPTED[cefc2efac385937bea2da85489570a0a046b8e0fcb9c9c469e86ccfc337bdf26f5cf290dd5d313b881215424af5716d8]"
+    SSHKEY2: "ENCRYPTED[910b1aa704442b6095fb01568163b348665d1dc496a2887bad5a853a8eaf0c2ceab8cc6ecf53f3e9b546a7d62677524a]"
 
 task:
   name: master
@@ -19,7 +22,21 @@ task:
   packages_script:
     - rm -rf *
     - sudo apt update
-    - sudo apt-get install -y python3 curl zip wget ccache rclone git-lfs bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf lib32ncurses5-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libwxgtk3.0-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev pigz
+    - sudo apt-get install -y software-properties-common python3 curl zip wget ccache rclone git-lfs bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf lib32ncurses5-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libwxgtk3.0-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev pigz git
+    - sudo /usr/bin/apt-key adv --no-tty --keyserver hkp://keyserver.ubuntu.com:80 --recv C99B11DEB97541F0
+    - sudo apt-get update
+    - sudo apt-get install gh -y
+  ssh_script:
+    - mkdir -p ~/.ssh
+    - sudo chmod 700 ~/.ssh/
+    - sudo rm -rf /root/.ssh
+    - ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+    - touch ~/.ssh/id_ed25519.pub
+    - touch ~/.ssh/id_ed25519
+    - echo "$SSHKEY1" > ~/.ssh/id_ed25519.pub
+    - echo "$SSHKEY2" > ~/.ssh/id_ed25519
+    - sudo chmod 400 ~/.ssh/*
+    - ssh-keygen -R $(curl ifconfig.me)
   github_script:
     - git config --global user.name "$UNAME"
     - git config --global user.email "$EMAIL"
@@ -29,13 +46,13 @@ task:
     - mkdir -p /tmp/ci/Kernel/Telegram
   clone_script:
     - cd /tmp/ci/Kernel
-    - git clone -b master --single-branch https://github.com/KernelPanic-OpenSource/android_kernel_xiaomi_sweet.git /tmp/ci/Kernel/Source
+    - git clone -b master --single-branch https://github.com/dopaemon/Doraemon.git /tmp/ci/Kernel/Source
     - git clone -b master --single-branch --depth="1" https://github.com/kdrag0n/proton-clang.git /tmp/ci/Kernel/clang
     - git clone -b master --single-branch --depth="1" https://github.com/radcolor/aarch64-linux-gnu.git /tmp/ci/Kernel/gcc64/
     - git clone -b master --single-branch --depth="1" https://github.com/radcolor/arm-linux-gnueabi.git /tmp/ci/Kernel/gcc32/
   export_script:
     - touch ~/.kernel
-    - echo "export CAF="LA.UM.9.1.r1-11500-SMxxx0.0"" >> ~/.kernel
+    - echo "export CAF="LA.UM.9.1.r1-11800-SMxxx0.0"" >> ~/.kernel
     - echo "export NAME="Doraemon-Kernel-$(date +"%d%m%Y")"" >> ~/.kernel
     - echo "export TIME="$(date +"%d%m%Y")"" >> ~/.kernel
     - echo "export DATETG="$(date +"%d/%m/%Y")"" >> ~/.kernel
@@ -123,6 +140,15 @@ task:
     - source ~/.kernel
     - curl -F document=@"/tmp/ci/Kernel/Upload/$OSS_ZIP_NAME" https://api.telegram.org/bot$TLGTK/sendDocument?chat_id=@KernelPanic_OpenSource_CI
     - curl -F document=@"/tmp/ci/Kernel/Upload/$MIUI_ZIP_NAME" https://api.telegram.org/bot$TLGTK/sendDocument?chat_id=@KernelPanic_OpenSource_CI
+
+  release_script:
+    - cd /tmp/ci/Kernel/Upload/
+    - gh config set git_protocol ssh --host github.com
+    - touch mytoken.txt
+    - echo "$TOKEN" > mytoken.txt
+    - gh auth login --with-token < mytoken.txt
+    - bash <(curl -Ls https://raw.githubusercontent.com/dopaemon/x-ui/main/release.sh)
+    - echo "yes" | gh release create $VERSIONS /tmp/ci/Kernel/Upload/* --title "Doraemon Kernel - Weekly - $(date +"%d-%m-%Y")"
 
   checkout_script:
     - ls /tmp/ci/Kernel/Source/out/arch/arm64/boot/
