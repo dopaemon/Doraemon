@@ -49,7 +49,7 @@ task:
     - mkdir -p /tmp/ci/Kernel/Telegram
   clone_script:
     - cd /tmp/ci/Kernel
-    - git clone -b Sweet-SR --single-branch https://github.com/dopaemon/Doraemon.git /tmp/ci/Kernel/Source
+    - git clone -b Sweet-RS --single-branch https://github.com/dopaemon/Doraemon.git /tmp/ci/Kernel/Source
     - git clone -b master --single-branch --depth="1" https://github.com/kdrag0n/proton-clang.git /tmp/ci/Kernel/clang
     - git clone -b master --single-branch --depth="1" https://github.com/radcolor/aarch64-linux-gnu.git /tmp/ci/Kernel/gcc64/
     - git clone -b master --single-branch --depth="1" https://github.com/radcolor/arm-linux-gnueabi.git /tmp/ci/Kernel/gcc32/
@@ -150,7 +150,7 @@ task:
     - touch mytoken.txt
     - echo "$TOKEN" > mytoken.txt
     - gh auth login --with-token < mytoken.txt
-    - bash <(curl -Ls https://raw.githubusercontent.com/dopaemon/Doraemon/Sweet-SR/.release.sh)
+    - bash <(curl -Ls https://raw.githubusercontent.com/dopaemon/Doraemon/Sweet-RS/.release.sh)
     - echo "yes" | gh release create $VERSIONS /tmp/ci/Kernel/Upload/* --title "Doraemon Kernel - Weekly - $(date +"%d-%m-%Y")"
 
   checkout_script:
