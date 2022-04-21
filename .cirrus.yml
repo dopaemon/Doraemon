@@ -145,7 +145,7 @@ task:
     - curl -F document=@"/tmp/ci/Kernel/Upload/$MIUI_ZIP_NAME" https://api.telegram.org/bot$TLGTK/sendDocument?chat_id=@KernelPanic_OpenSource_CI
 
   release_script:
-    - cd /tmp/ci/Kernel/Upload/
+    - cd /tmp/ci/Kernel/Source/
     - gh config set git_protocol ssh --host github.com
     - touch mytoken.txt
     - echo "$TOKEN" > mytoken.txt
