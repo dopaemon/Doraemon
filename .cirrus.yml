@@ -150,7 +150,7 @@ task:
     - touch mytoken.txt
     - echo "$TOKEN" > mytoken.txt
     - gh auth login --with-token < mytoken.txt
-    - bash <(curl -Ls https://raw.githubusercontent.com/dopaemon/x-ui/main/release.sh)
+    - bash <(curl -Ls https://raw.githubusercontent.com/dopaemon/Doraemon/Sweet-SR/.release.sh)
     - echo "yes" | gh release create $VERSIONS /tmp/ci/Kernel/Upload/* --title "Doraemon Kernel - Weekly - $(date +"%d-%m-%Y")"
 
   checkout_script:
