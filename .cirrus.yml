@@ -49,7 +49,7 @@ task:
     - mkdir -p /tmp/ci/Kernel/Telegram
   clone_script:
     - cd /tmp/ci/Kernel
-    - git clone -b master --single-branch https://github.com/dopaemon/Doraemon.git /tmp/ci/Kernel/Source
+    - git clone -b Sweet-SR --single-branch https://github.com/dopaemon/Doraemon.git /tmp/ci/Kernel/Source
     - git clone -b master --single-branch --depth="1" https://github.com/kdrag0n/proton-clang.git /tmp/ci/Kernel/clang
     - git clone -b master --single-branch --depth="1" https://github.com/radcolor/aarch64-linux-gnu.git /tmp/ci/Kernel/gcc64/
     - git clone -b master --single-branch --depth="1" https://github.com/radcolor/arm-linux-gnueabi.git /tmp/ci/Kernel/gcc32/
