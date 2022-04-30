@@ -45,9 +45,6 @@
 #include <linux/double_click.h>
 #include "xiaomi_frame_stat.h"
 
-#ifdef CONFIG_KLAPSE
-#include <linux/klapse.h>
-
 #ifdef CONFIG_EXPOSURE_ADJUSTMENT
 #include "exposure_adjustment.h"
 
