@@ -44,9 +44,6 @@
 #include <linux/export.h>
 #include <linux/double_click.h>
 
-#ifdef CONFIG_KLAPSE
-#include <linux/klapse.h>
-
 #ifdef CONFIG_EXPOSURE_ADJUSTMENT
 #include "exposure_adjustment.h"
 
